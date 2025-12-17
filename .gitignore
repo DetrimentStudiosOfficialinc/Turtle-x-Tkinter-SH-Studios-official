@@ -1,207 +1,254 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[codz]
-*$py.class
+import turtle
+import tkinter as tk
 
-# C extensions
-*.so
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+colors = [
+    "red", "yellow", "blue", "green", "salmon", "lightblue",
+    "purple", "white", "pink", "seashell", "lightpink",
+    "maroon", "chocolate", "linen"
+]
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+bg_color_list = [
+    "black", "gray", "navy", "darkblue", "darkgreen",
+    "purple", "brown", "white"
+]
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+patterns = [
+    {"name": "Спираль", "angle": 91},
+    {"name": "Звезда", "angle": 100000},
+    {"name": "Роза", "angle": 55},
+    {"name": "Пентагон", "angle": 32832},
+    {"name": "Перевернутый треугольник", "angle": 60000},
+    {"name": "Снежинка", "angle": 12032},
+    {"name": "Снежинка 2", "angle": 613},
+    {"name": "Салют", "angle": 613613},
+    {"name": "Спираль 2", "angle": 613111},
+    {"name": "Звезда 2", "angle": 456},
+    {"name": "Шипастый салют", "angle": 6666},
+    {"name": "Звезда в звезде", "angle": 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999},
+    {"name": "Земля шипов", "angle": 7777},
+    {"name": "Дроппер", "angle": 62},
+    {"name": "Треугольник", "angle": 120},
+    {"name": "Коридор", "angle": 90}
+]
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py.cover
-.hypothesis/
-.pytest_cache/
-cover/
 
-# Translations
-*.mo
-*.pot
+screen = turtle.Screen()
+screen.bgcolor("black")
+screen.tracer(0)
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+t = turtle.Turtle()
+t.hideturtle()
+t.width(2)
 
-# Flask stuff:
-instance/
-.webassets-cache
 
-# Scrapy stuff:
-.scrapy
+watermark = turtle.Turtle()
+watermark.hideturtle()
+watermark.penup()
+watermark.color("#777777")  # визуальная "прозрачность"
+watermark.goto(0, -250)
+watermark.write(
+    "SH Studios💓",
+    align="center",
+    font=("Times New Roman", 16, "italic")
+)
 
-# Sphinx documentation
-docs/_build/
 
-# PyBuilder
-.pybuilder/
-target/
+x = 0
+current_angle = patterns[0]["angle"]
+current_pattern_name = patterns[0]["name"]
 
-# Jupyter Notebook
-.ipynb_checkpoints
+running = False
+speed_value = 2
 
-# IPython
-profile_default/
-ipython_config.py
+line_color_mode = "auto"   # auto / fixed
+fixed_line_color = "white"
+def draw_step():
+    global x
+    if running:
+        for _ in range(speed_value):
+            if line_color_mode == "auto":
+                t.pencolor(colors[x % len(colors)])
+            else:
+                t.pencolor(fixed_line_color)
 
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+            t.forward(x)
+            t.left(current_angle)
+            x += 1
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+        screen.update()
 
-# UV
-#   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#uv.lock
+    screen.ontimer(draw_step, 50)
 
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
-#poetry.toml
+draw_step()
 
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#   pdm recommends including project-wide configuration in pdm.toml, but excluding .pdm-python.
-#   https://pdm-project.org/en/latest/usage/project/#working-with-version-control
-#pdm.lock
-#pdm.toml
-.pdm-python
-.pdm-build/
+def clear_all():
+    global x
+    t.clear()
+    t.penup()
+    t.home()
+    t.pendown()
+    x = 0
 
-# pixi
-#   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
-#pixi.lock
-#   Pixi creates a virtual environment in the .pixi directory, just like venv module creates one
-#   in the .venv directory. It is recommended not to include this directory in version control.
-.pixi
+def hide_all():
+    menu_frame.pack_forget()
+    control_frame.pack_forget()
+    pattern_frame.pack_forget()
+    editor_frame.pack_forget()
+    settings_frame.pack_forget()
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
+def show_menu():
+    stop()
+    hide_all()
+    menu_frame.pack(pady=50)
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
+def stop():
+    global running
+    running = False
 
-# SageMath parsed files
-*.sage.py
 
-# Environments
-.env
-.envrc
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+def start_game():
+    global running
+    clear_all()
+    running = True
+    hide_all()
+    control_frame.pack(side=tk.TOP, pady=5)
 
-# Spyder project settings
-.spyderproject
-.spyproject
+def exit_game():
+    try:
+        screen.bye()
+    except:
+        pass
+    root.destroy()
 
-# Rope project settings
-.ropeproject
 
-# mkdocs documentation
-/site
+def show_patterns():
+    hide_all()
+    pattern_frame.pack(pady=20)
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+def select_pattern(index):
+    global current_angle, current_pattern_name, running
+    current_angle = patterns[index]["angle"]
+    current_pattern_name = patterns[index]["name"]
+    pattern_label.config(text=f"Текущий узор: {current_pattern_name}")
+    clear_all()
+    running = True
+    hide_all()
+    control_frame.pack(side=tk.TOP, pady=5)
 
-# Pyre type checker
-.pyre/
 
-# pytype static type analyzer
-.pytype/
+def show_editor():
+    hide_all()
+    angle_entry.delete(0, tk.END)
+    angle_entry.insert(0, str(current_angle))
+    editor_frame.pack(pady=30)
 
-# Cython debug symbols
-cython_debug/
+def apply_custom_angle():
+    global current_angle, current_pattern_name, running
+    try:
+        angle = float(angle_entry.get())
+        current_angle = angle
+        current_pattern_name = f"Пользовательский ({angle})"
+        pattern_label.config(text=f"Текущий узор: {current_pattern_name}")
+        clear_all()
+        running = True
+        hide_all()
+        control_frame.pack(side=tk.TOP, pady=5)
+    except ValueError:
+        angle_entry.delete(0, tk.END)
+        angle_entry.insert(0, "Ошибка")
 
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+def show_settings():
+    hide_all()
+    settings_frame.pack(pady=30)
 
-# Abstra
-# Abstra is an AI-powered process automation framework.
-# Ignore directories containing user credentials, local state, and settings.
-# Learn more at https://abstra.io/docs
-.abstra/
+def apply_bg_color(color):
+    screen.bgcolor(color)
 
-# Visual Studio Code
-#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
-#  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#  and can be added to the global gitignore or merged into this file. However, if you prefer, 
-#  you could uncomment the following to ignore the entire vscode folder
-# .vscode/
+def apply_line_color(color):
+    global line_color_mode, fixed_line_color
+    if color == "Авто":
+        line_color_mode = "auto"
+    else:
+        line_color_mode = "fixed"
+        fixed_line_color = color
 
-# Ruff stuff:
-.ruff_cache/
+def all_colors():
+    global line_color_mode
+    line_color_mode = "auto"
+    line_var.set("Авто")
 
-# PyPI configuration file
-.pypirc
 
-# Cursor
-#  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
-#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
-#  refer to https://docs.cursor.com/context/ignore-files
-.cursorignore
-.cursorindexingignore
+root = tk.Tk()
+root.title("Turtle Art")
 
-# Marimo
-marimo/_static/
-marimo/_lsp/
-__marimo__/
+# --- Главное меню ---
+menu_frame = tk.Frame(root)
+tk.Label(menu_frame, text="Меню", font=("Arial", 24)).pack(pady=10)
+tk.Button(menu_frame, text="Играть", width=20, command=start_game).pack(pady=5)
+tk.Button(menu_frame, text="Узоры", width=20, command=show_patterns).pack(pady=5)
+tk.Button(menu_frame, text="Редактор", width=20, command=show_editor).pack(pady=5)
+tk.Button(menu_frame, text="Настройки", width=20, command=show_settings).pack(pady=5)
+tk.Button(menu_frame, text="Выйти", width=20, command=exit_game).pack(pady=5)
+menu_frame.pack(pady=50)
+
+
+control_frame = tk.Frame(root)
+
+tk.Button(control_frame, text="Стоп / Продолжить", command=lambda: toggle()).pack(side=tk.LEFT, padx=5)
+tk.Button(control_frame, text="Стереть всё", command=clear_all).pack(side=tk.LEFT, padx=5)
+tk.Button(control_frame, text="Назад", command=show_menu).pack(side=tk.LEFT, padx=5)
+
+tk.Label(control_frame, text="Скорость:").pack(side=tk.LEFT, padx=5)
+speed_slider = tk.Scale(control_frame, from_=1, to=10, orient=tk.HORIZONTAL,
+                        command=lambda v: set_speed(v))
+speed_slider.set(speed_value)
+speed_slider.pack(side=tk.LEFT)
+
+pattern_label = tk.Label(control_frame, text=f"Текущий узор: {current_pattern_name}")
+pattern_label.pack(side=tk.LEFT, padx=10)
+
+
+pattern_frame = tk.Frame(root)
+tk.Label(pattern_frame, text="Выберите узор", font=("Arial", 18)).pack(pady=10)
+for i, p in enumerate(patterns):
+    tk.Button(pattern_frame, text=p["name"], width=25,
+              command=lambda i=i: select_pattern(i)).pack(pady=3)
+tk.Button(pattern_frame, text="Назад", width=20, command=show_menu).pack(pady=10)
+
+
+editor_frame = tk.Frame(root)
+tk.Label(editor_frame, text="Редактор узора", font=("Arial", 18)).pack(pady=10)
+tk.Label(editor_frame, text="Угол поворота:").pack()
+angle_entry = tk.Entry(editor_frame, width=10, justify="center")
+angle_entry.pack(pady=5)
+tk.Button(editor_frame, text="Применить", width=20, command=apply_custom_angle).pack(pady=5)
+tk.Button(editor_frame, text="Назад", width=20, command=show_menu).pack(pady=5)
+
+
+settings_frame = tk.Frame(root)
+tk.Label(settings_frame, text="Настройки", font=("Arial", 18)).pack(pady=10)
+
+tk.Label(settings_frame, text="Цвет фона:").pack()
+bg_var = tk.StringVar(value="black")
+tk.OptionMenu(settings_frame, bg_var, *bg_color_list, command=apply_bg_color).pack(pady=5)
+
+tk.Label(settings_frame, text="Цвет линий:").pack()
+line_var = tk.StringVar(value="Авто")
+tk.OptionMenu(settings_frame, line_var, "Авто", *colors, command=apply_line_color).pack(pady=5)
+
+tk.Button(settings_frame, text="Все цвета сразу", width=20, command=all_colors).pack(pady=5)
+tk.Button(settings_frame, text="Назад", width=20, command=show_menu).pack(pady=10)
+
+def toggle():
+    global running
+    running = not running
+
+def set_speed(val):
+    global speed_value
+    speed_value = int(val)
+
+root.protocol("WM_DELETE_WINDOW", exit_game)
+root.mainloop()
+#SH STUDIOS COPYLOCKED!
+#OFFICIAL SH STUDIOS!
